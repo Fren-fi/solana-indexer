@@ -1,0 +1,35 @@
+specVersion: v0.1.0
+package:
+  name: 'frens_clickhouse'
+  version: v0.1.0
+
+imports:
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.7/substreams-sink-sql-protodefs-v1.0.7.spkg
+  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.3.1/substreams-database-change-v1.3.1.spkg
+  system_program_events: https://spkg.io/streamingfast/system-program-events-v0.1.7.spkg
+  frens_events: https://spkg.io/v1/packages/frens_events/v0.1.1
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: target/wasm32-unknown-unknown/release/frens_clickhouse.wasm
+
+modules:
+  - name: block_database_changes
+    kind: map
+    initialBlock: 374460200
+    inputs:
+      - source: sf.solana.type.v1.Block
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+
+network: solana-devnet
+
+sink:
+  module: block_database_changes
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: clickhouse
+    postgraphile_frontend:
+      enabled: false

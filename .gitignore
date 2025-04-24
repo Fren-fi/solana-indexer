@@ -1,0 +1,6 @@
+.envrc
+.idea
+target
+*.spkg
+.substreams.env
+*.log
