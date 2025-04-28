@@ -1,4 +1,4 @@
-ENDPOINT ?= mainnet.sol.streamingfast.io:443
+ENDPOINT ?= devnet.sol.streamingfast.io:443
 UNDO_BUFFER_SIZE ?= 300
 
 SCHEMA_FILE = "./schema.sql"

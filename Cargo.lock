@@ -730,7 +730,7 @@ dependencies = [
 [[package]]
 name = "frens-substream"
 version = "0.0.1"
-source = "git+https://github.com/Fren-fi/solana-substream?tag=v0.1.2#e349cd194251ba8271be544b24535d6dfed82c14"
+source = "git+https://github.com/Fren-fi/solana-substream?tag=v0.1.3#187429873264650bab5aa0334d75b7544fb88d81"
 dependencies = [
  "anchor-lang",
  "anyhow",

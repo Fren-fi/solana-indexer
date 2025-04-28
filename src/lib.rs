@@ -22,6 +22,7 @@ use instruction::{get_indexed_instructions, IndexedInstruction, IndexedInstructi
 
 #[substreams::handlers::map]
 fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
+    substreams::log::println("parsing blk ...");
     let mut tables = Tables::new();
     for (index, transaction) in block.transactions.iter().enumerate() {
         match parse_transaction(
@@ -70,6 +71,7 @@ fn parse_transaction<'a>(
     blockhash: &String,
     tables: &mut Tables,
 ) -> Result<bool, Error> {
+    // substreams::log::println("parsing transaction ...");
     if let Some(_) = transaction.meta.as_ref().unwrap().err {
         return Ok(false);
     }
@@ -110,6 +112,7 @@ fn parse_instruction<'a>(
     slot: u64,
     transaction_index: u32,
 ) -> Result<Option<&'a mut Row>, Error> {
+    // substreams::log::println("parsing instruction ...");
     let program_id = instruction.program_id();
     let row = if program_id == FRENS_PROGRAM_ID {
         parse_frens_instruction(
@@ -157,6 +160,8 @@ fn parse_frens_instruction<'a>(
     slot: u64,
     transaction_index: u32,
 ) -> Result<Option<&'a mut Row>, Error> {
+    // substreams::log::println("parsing fren ...");
+    // substreams::log::println(format!("parsing fren event: {:?}", transaction.id()));
     let row = match frens_substream::parse_instruction(
         &transaction,
         &instruction.instruction,
@@ -177,6 +182,7 @@ fn parse_frens_instruction<'a>(
                 )
                 .set("trx_hash", create.trx_hash)
                 .set("platform_id", create.platform_id)
+                .set("mint", create.mint)
                 .set("pool_state", create.pool_state)
                 .set("creator", create.creator)
                 .set("config", create.config)
@@ -201,6 +207,7 @@ fn parse_frens_instruction<'a>(
             )
             .set("trx_hash", trade.trx_hash)
             .set("platform_id", trade.platform_id)
+            .set("mint", trade.mint)
             .set("total_base_sell", trade.total_base_sell)
             .set("virtual_base", trade.virtual_base)
             .set("virtual_quote", trade.virtual_quote)
