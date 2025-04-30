@@ -24,6 +24,8 @@ use instruction::{get_indexed_instructions, IndexedInstruction, IndexedInstructi
 fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
     substreams::log::println("parsing blk ...");
     let mut tables = Tables::new();
+    let mut tables_changed = false;
+
     for (index, transaction) in block.transactions.iter().enumerate() {
         match parse_transaction(
             transaction,
@@ -47,21 +49,28 @@ fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
                 for i in 0..8 {
                     row.set(&format!("signer{i}"), signers.get(i).unwrap_or(&"".into()));
                 }
+                tables_changed = true;
             }
             false => (),
         }
     }
-    tables
-        .create_row("blocks", block.slot.to_string())
-        .set("parent_slot", block.parent_slot)
-        .set(
-            "block_height",
-            block.block_height.as_ref().unwrap().block_height,
-        )
-        .set("blockhash", block.blockhash)
-        .set("previous_blockhash", block.previous_blockhash)
-        .set("block_time", block.block_time.as_ref().unwrap().timestamp);
-    Ok(tables.to_database_changes())
+
+    if tables_changed {
+        tables
+            .create_row("blocks", block.slot.to_string())
+            .set("parent_slot", block.parent_slot)
+            .set(
+                "block_height",
+                block.block_height.as_ref().unwrap().block_height,
+            )
+            .set("blockhash", block.blockhash)
+            .set("previous_blockhash", block.previous_blockhash)
+            .set("block_time", block.block_time.as_ref().unwrap().timestamp);
+        Ok(tables.to_database_changes())
+    } else {
+        // substreams::log::println("no tables changed");
+        Ok(DatabaseChanges::default())
+    }
 }
 
 fn parse_transaction<'a>(

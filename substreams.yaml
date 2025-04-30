@@ -1,6 +1,6 @@
 specVersion: v0.1.0
 package:
-  name: 'frens_clickhouse'
+  name: 'frens_psql'
   version: v0.1.0
 
 imports:
@@ -13,7 +13,7 @@ imports:
 binaries:
   default:
     type: wasm/rust-v1+wasm-bindgen-shims
-    file: target/wasm32-unknown-unknown/release/frens_clickhouse.wasm
+    file: target/wasm32-unknown-unknown/release/frens_psql.wasm
 
 modules:
   - name: block_database_changes
@@ -23,13 +23,9 @@ modules:
       - map: solana:blocks_without_votes
     output:
       type: proto:sf.substreams.sink.database.v1.DatabaseChanges
-    blockFilter:
-      module: solana:program_ids_without_votes
-      query:
-        string: program:LanD8FpTBBvzZFXjTxsAoipkFsxPUCDB4qAqKxYDiNP
 
 
-network: solana
+network: solana-devnet
 
 sink:
   module: block_database_changes
